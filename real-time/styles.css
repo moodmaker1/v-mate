@@ -1,23 +1,91 @@
 /**
- * styles.css
- * 역할: v-mate 익스텐션의 모든 UI 스타일을 정의합니다.
- * 
- * 포함 요소:
- * - 설명 팝업 스타일
- * - 아이콘 버튼 스타일
- * - 로딩 애니메이션
- * - 호버 효과
+ * real-time/styles.css
+ * 실시간 설명 모드 UI 스타일
+ * 네임스페이스: vmate-realtime-
  */
 
-/* 기본 리셋 */
-.vmate-container * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* 💡 아이콘 */
+.vmate-realtime-icon {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  z-index: 2147483645;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: vmate-realtime-icon-appear 0.2s ease-out;
 }
 
-/* Step 4: 팝업 UI 스타일 */
-.vmate-popup {
+@keyframes vmate-realtime-icon-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.vmate-realtime-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+.vmate-realtime-icon::before {
+  content: '💡';
+  font-size: 20px;
+}
+
+/* 툴팁 */
+.vmate-realtime-tooltip {
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.vmate-realtime-icon:hover .vmate-realtime-tooltip {
+  opacity: 1;
+}
+
+/* 오버레이 */
+.vmate-realtime-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2147483646;
+  animation: vmate-realtime-overlay-fadein 0.2s ease-out;
+}
+
+@keyframes vmate-realtime-overlay-fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 팝업 */
+.vmate-realtime-popup {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -26,14 +94,14 @@
   max-width: 450px;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   z-index: 2147483647;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  animation: vmate-popup-fadein 0.2s ease-out;
+  animation: vmate-realtime-popup-fadein 0.2s ease-out;
   overflow: hidden;
 }
 
-@keyframes vmate-popup-fadein {
+@keyframes vmate-realtime-popup-fadein {
   from {
     opacity: 0;
     transform: translate(-50%, -48%) scale(0.95);
@@ -45,7 +113,7 @@
 }
 
 /* 팝업 헤더 */
-.vmate-popup-header {
+.vmate-realtime-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 16px 20px;
@@ -53,74 +121,12 @@
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.vmate-popup-header::before {
-  content: '💡';
-  font-size: 20px;
-}
-
-/* 팝업 컨텐츠 */
-.vmate-popup-content {
-  padding: 20px;
-  max-height: 400px;
-  overflow-y: auto;
-  line-height: 1.6;
-  color: #333;
-}
-
-/* 로딩 상태 */
-.vmate-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  color: #666;
-}
-
-.vmate-loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f0f0f0;
-  border-top: 3px solid #667eea;
-  border-radius: 50%;
-  animation: vmate-spin 0.8s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes vmate-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.vmate-loading-text {
-  font-size: 14px;
-  color: #888;
-}
-
-/* 설명 텍스트 */
-.vmate-explanation {
-  font-size: 15px;
-  line-height: 1.7;
-  color: #333;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-/* 에러 메시지 */
-.vmate-error {
-  color: #e53e3e;
-  padding: 16px;
-  background: #fff5f5;
-  border-radius: 8px;
-  font-size: 14px;
+  justify-content: space-between;
+  position: relative;
 }
 
 /* 닫기 버튼 */
-.vmate-popup-close {
+.vmate-realtime-close {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -140,87 +146,62 @@
   padding: 0;
 }
 
-.vmate-popup-close:hover {
+.vmate-realtime-close:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* 오버레이 (배경 어둡게) */
-.vmate-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 2147483646;
-  animation: vmate-overlay-fadein 0.2s ease-out;
+/* 팝업 컨텐츠 */
+.vmate-realtime-content {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  line-height: 1.6;
 }
 
-@keyframes vmate-overlay-fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Step 5: 아이콘 버튼 스타일 */
-.vmate-icon-button {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  cursor: pointer;
+/* 로딩 */
+.vmate-realtime-loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  z-index: 2147483645;
-  transition: transform 0.2s, box-shadow 0.2s;
-  animation: vmate-icon-appear 0.2s ease-out;
+  padding: 40px 20px;
 }
 
-@keyframes vmate-icon-appear {
-  from {
-    opacity: 0;
-    transform: scale(0.5);
-  }
+.vmate-realtime-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: vmate-realtime-spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes vmate-realtime-spin {
   to {
-    opacity: 1;
-    transform: scale(1);
+    transform: rotate(360deg);
   }
 }
 
-.vmate-icon-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+.vmate-realtime-loading-text {
+  font-size: 14px;
+  color: #888;
 }
 
-.vmate-icon-button::before {
-  content: '💡';
-  font-size: 20px;
+/* 설명 텍스트 */
+.vmate-realtime-explanation {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-/* 툴팁 */
-.vmate-tooltip {
-  position: absolute;
-  bottom: -32px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
+/* 에러 */
+.vmate-realtime-error {
+  color: #e53e3e;
+  padding: 16px;
+  background: #fff5f5;
+  border-radius: 8px;
+  font-size: 14px;
 }
-
-.vmate-icon-button:hover .vmate-tooltip {
-  opacity: 1;
-}
-

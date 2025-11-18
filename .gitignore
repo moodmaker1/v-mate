@@ -1,5 +1,6 @@
 # API 키 및 설정 파일
 config.js
+real-time/config.js
 
 # 환경 변수
 .env

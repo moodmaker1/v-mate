@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "v-mate",
+  "version": "2.0.0",
+  "description": "대학생을 위한 AI 학습 도우미 - 실시간 설명 + 스마트 퀴즈",
+  
+  "icons": {
+    "16": "real-time/icons/icon16.png",
+    "48": "real-time/icons/icon48.png",
+    "128": "real-time/icons/icon48.png"
+  },
+  
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  
+  "host_permissions": [
+    "https://api.openai.com/*"
+  ],
+  
+  "background": {
+    "service_worker": "shared/background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "real-time/content.js",
+        "quiz/ui/ox-quiz.js",
+        "quiz/ui/multiple-choice-quiz.js",
+        "quiz/ui/subjective-quiz.js",
+        "quiz/content.js"
+      ],
+      "css": [
+        "real-time/styles.css",
+        "quiz/styles.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "real-time/icons/icon16.png",
+      "48": "real-time/icons/icon48.png"
+    }
+  }
+}
+
