@@ -153,6 +153,19 @@ function checkMultipleChoiceAnswer(parsed, container) {
     explanationDiv.className = 'vmate-quiz-explanation';
     explanationDiv.innerHTML = `<strong>💡 해설:</strong><br>${parsed.explanation}`;
     resultDiv.appendChild(explanationDiv);
+    
+    // 🔊 음성 재생 버튼
+    const audioBtn = document.createElement('button');
+    audioBtn.className = 'vmate-quiz-audio-btn';
+    audioBtn.innerHTML = '🔊 해설 듣기';
+    audioBtn.dataset.text = parsed.explanation;  // 텍스트 저장
+    
+    // 클릭 이벤트 (항상 playTextToSpeech 호출)
+    audioBtn.addEventListener('click', function() {
+      playTextToSpeech(this.dataset.text, this);
+    });
+    
+    resultDiv.appendChild(audioBtn);
   }
   
   // 다시 풀기 버튼

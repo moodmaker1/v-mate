@@ -16,7 +16,8 @@
   ],
   
   "host_permissions": [
-    "https://api.openai.com/*"
+    "https://api.openai.com/*",
+    "https://api.elevenlabs.io/*"
   ],
   
   "background": {
@@ -27,6 +28,7 @@
     {
       "matches": ["<all_urls>"],
       "js": [
+        "shared/tts-helper.js",
         "real-time/content.js",
         "quiz/ui/ox-quiz.js",
         "quiz/ui/multiple-choice-quiz.js",

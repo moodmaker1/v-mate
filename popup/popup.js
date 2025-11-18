@@ -73,23 +73,43 @@ function updateModeDisplay(mode) {
  * API 키 저장
  */
 document.getElementById('saveBtn').addEventListener('click', async () => {
-  const apiKey = document.getElementById('apiKey').value.trim();
+  const openaiKey = document.getElementById('apiKey').value.trim();
+  const elevenlabsKey = document.getElementById('elevenlabsApiKey').value.trim();
   
-  if (!apiKey) {
-    showToast('API 키를 입력해주세요', 'error');
-    return;
-  }
-  
-  if (!apiKey.startsWith('sk-')) {
-    showToast('올바른 OpenAI API 키 형식이 아닙니다', 'error');
+  if (!openaiKey && !elevenlabsKey) {
+    showToast('최소 하나의 API 키를 입력해주세요', 'error');
     return;
   }
   
   try {
-    await chrome.storage.local.set({ openaiApiKey: apiKey });
+    const dataToSave = {};
+    
+    // OpenAI 키 검증 및 저장
+    if (openaiKey) {
+      if (!openaiKey.startsWith('sk-')) {
+        showToast('올바른 OpenAI API 키 형식이 아닙니다', 'error');
+        return;
+      }
+      dataToSave.openaiApiKey = openaiKey;
+    }
+    
+    // ElevenLabs 키 저장 (보이스 ID는 config.js에서 관리)
+    if (elevenlabsKey) {
+      dataToSave.elevenlabsApiKey = elevenlabsKey;
+    }
+    
+    await chrome.storage.local.set(dataToSave);
     showToast('API 키가 저장되었습니다!', 'success');
-    document.getElementById('apiKey').value = '';
-    document.getElementById('apiKey').placeholder = 'API 키가 저장되어 있습니다';
+    
+    // 입력란 초기화
+    if (openaiKey) {
+      document.getElementById('apiKey').value = '';
+      document.getElementById('apiKey').placeholder = 'OpenAI API 키 저장됨';
+    }
+    if (elevenlabsKey) {
+      document.getElementById('elevenlabsApiKey').value = '';
+      document.getElementById('elevenlabsApiKey').placeholder = 'ElevenLabs API 키 저장됨';
+    }
   } catch (error) {
     console.error('API 키 저장 실패:', error);
     showToast('저장에 실패했습니다', 'error');
@@ -99,9 +119,12 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 /**
  * 페이지 로드 시 저장된 API 키 확인
  */
-chrome.storage.local.get(['openaiApiKey'], (result) => {
+chrome.storage.local.get(['openaiApiKey', 'elevenlabsApiKey'], (result) => {
   if (result.openaiApiKey) {
-    document.getElementById('apiKey').placeholder = 'API 키가 저장되어 있습니다';
+    document.getElementById('apiKey').placeholder = 'OpenAI API 키 저장됨';
+  }
+  if (result.elevenlabsApiKey) {
+    document.getElementById('elevenlabsApiKey').placeholder = 'ElevenLabs API 키 저장됨';
   }
 });
 
@@ -123,6 +146,12 @@ function showToast(message, type = 'success') {
  * Enter 키로 API 키 저장
  */
 document.getElementById('apiKey').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('saveBtn').click();
+  }
+});
+
+document.getElementById('elevenlabsApiKey').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     document.getElementById('saveBtn').click();
   }

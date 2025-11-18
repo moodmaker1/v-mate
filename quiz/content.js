@@ -334,6 +334,11 @@ function quizCloseQuizPopup() {
     quizCurrentQuizPopup.popup?.remove();
     quizCurrentQuizPopup = null;
   }
+  
+  // 오디오 재생 중이면 정지
+  if (typeof stopCurrentAudio === 'function') {
+    stopCurrentAudio();
+  }
 }
 
 function quizRemoveIcon() {

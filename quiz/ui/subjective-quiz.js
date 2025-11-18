@@ -222,6 +222,19 @@ function displaySubjectiveResult(scoreData, parsed, container, textarea, submitB
     modelAnswerDiv.className = 'vmate-quiz-model-answer';
     modelAnswerDiv.innerHTML = `<strong>💡 모범 답안:</strong><br>${parsed.modelAnswer}`;
     resultDiv.appendChild(modelAnswerDiv);
+    
+    // 🔊 음성 재생 버튼
+    const audioBtn = document.createElement('button');
+    audioBtn.className = 'vmate-quiz-audio-btn';
+    audioBtn.innerHTML = '🔊 모범 답안 듣기';
+    audioBtn.dataset.text = parsed.modelAnswer;  // 텍스트 저장
+    
+    // 클릭 이벤트 (항상 playTextToSpeech 호출)
+    audioBtn.addEventListener('click', function() {
+      playTextToSpeech(this.dataset.text, this);
+    });
+    
+    resultDiv.appendChild(audioBtn);
   }
   
   // 다시 풀기 버튼

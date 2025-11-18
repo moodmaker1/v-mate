@@ -203,6 +203,20 @@ function realTimeShowPopup(type, content = '') {
     explanation.className = 'vmate-realtime-explanation';
     explanation.textContent = content;
     contentDiv.appendChild(explanation);
+    
+    // 🔊 음성 재생 버튼 추가
+    const audioBtn = document.createElement('button');
+    audioBtn.className = 'vmate-realtime-audio-btn';
+    audioBtn.innerHTML = '🔊 음성으로 듣기';
+    audioBtn.dataset.text = content;  // 텍스트 저장
+    
+    // 클릭 이벤트 (항상 playTextToSpeech 호출)
+    audioBtn.addEventListener('click', function() {
+      playTextToSpeech(this.dataset.text, this);
+    });
+    
+    contentDiv.appendChild(audioBtn);
+    
   } else if (type === 'error') {
     const error = document.createElement('div');
     error.className = 'vmate-realtime-error';
@@ -227,6 +241,11 @@ function realTimeClosePopup() {
     realTimeCurrentPopup.overlay?.remove();
     realTimeCurrentPopup.popup?.remove();
     realTimeCurrentPopup = null;
+  }
+  
+  // 오디오 재생 중이면 정지
+  if (typeof stopCurrentAudio === 'function') {
+    stopCurrentAudio();
   }
 }
 

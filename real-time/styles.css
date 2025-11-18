@@ -205,3 +205,50 @@
   border-radius: 8px;
   font-size: 14px;
 }
+
+/* 오디오 재생 버튼 */
+.vmate-realtime-audio-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.vmate-realtime-audio-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.vmate-realtime-audio-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.vmate-realtime-audio-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 재생 중 애니메이션 */
+.vmate-realtime-audio-btn.playing {
+  animation: audio-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes audio-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(102, 126, 234, 0);
+  }
+}
