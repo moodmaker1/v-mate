@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "v-mate",
-  "version": "2.0.0",
-  "description": "대학생을 위한 AI 학습 도우미 - 실시간 설명 + 스마트 퀴즈",
+  "version": "2.1.0",
+  "description": "대학생을 위한 AI 학습 도우미 - 실시간 설명 + 스마트 퀴즈 + 노션 정리",
   
   "icons": {
     "16": "real-time/icons/icon16.png",
@@ -17,7 +17,8 @@
   
   "host_permissions": [
     "https://api.openai.com/*",
-    "https://api.elevenlabs.io/*"
+    "https://api.elevenlabs.io/*",
+    "https://api.notion.com/*"
   ],
   
   "background": {
@@ -33,11 +34,13 @@
         "quiz/ui/ox-quiz.js",
         "quiz/ui/multiple-choice-quiz.js",
         "quiz/ui/subjective-quiz.js",
-        "quiz/content.js"
+        "quiz/content.js",
+        "notion-sync/content.js"
       ],
       "css": [
         "real-time/styles.css",
-        "quiz/styles.css"
+        "quiz/styles.css",
+        "notion-sync/styles.css"
       ],
       "run_at": "document_end"
     }

@@ -3,6 +3,43 @@
  * 확장 프로그램 팝업 로직 - 모드 선택 및 API 키 관리
  */
 
+// ========================================
+// config.js에서 자동으로 API 키 로드
+// ========================================
+(function autoLoadFromConfig() {
+  // CONFIG 객체가 존재하면 (config.js가 로드되었으면)
+  if (typeof CONFIG !== 'undefined') {
+    console.log('✅ config.js 감지됨 - 자동 저장 시작');
+    
+    const autoSaveData = {};
+    
+    if (CONFIG.OPENAI_API_KEY && !CONFIG.OPENAI_API_KEY.includes('YOUR_')) {
+      autoSaveData.openaiApiKey = CONFIG.OPENAI_API_KEY;
+      console.log('📝 OpenAI API 키 감지');
+    }
+    if (CONFIG.ELEVENLABS_API_KEY && !CONFIG.ELEVENLABS_API_KEY.includes('YOUR_')) {
+      autoSaveData.elevenlabsApiKey = CONFIG.ELEVENLABS_API_KEY;
+      console.log('📝 ElevenLabs API 키 감지');
+    }
+    if (CONFIG.NOTION_TOKEN && !CONFIG.NOTION_TOKEN.includes('YOUR_')) {
+      autoSaveData.notionToken = CONFIG.NOTION_TOKEN;
+      console.log('📝 Notion Token 감지');
+    }
+    if (CONFIG.NOTION_PARENT_PAGE_ID && !CONFIG.NOTION_PARENT_PAGE_ID.includes('YOUR_')) {
+      autoSaveData.notionParentPageId = CONFIG.NOTION_PARENT_PAGE_ID;
+      console.log('📝 Notion Parent Page ID 감지');
+    }
+    
+    if (Object.keys(autoSaveData).length > 0) {
+      chrome.storage.local.set(autoSaveData, () => {
+        console.log('✅ config.js 설정을 Chrome Storage에 자동 저장 완료!');
+      });
+    }
+  } else {
+    console.log('ℹ️ config.js 없음 - 수동으로 API 키를 입력하세요');
+  }
+})();
+
 // 현재 모드 불러오기
 chrome.storage.local.get(['currentMode'], (result) => {
   const mode = result.currentMode || 'real-time';
@@ -15,6 +52,9 @@ chrome.storage.local.get(['currentMode'], (result) => {
   } else if (mode === 'quiz') {
     document.getElementById('radio-quiz').checked = true;
     document.getElementById('mode-quiz').classList.add('active');
+  } else if (mode === 'notion') {
+    document.getElementById('radio-notion').checked = true;
+    document.getElementById('mode-notion').classList.add('active');
   }
 });
 
@@ -27,6 +67,10 @@ document.getElementById('mode-quiz').addEventListener('click', () => {
   setMode('quiz');
 });
 
+document.getElementById('mode-notion').addEventListener('click', () => {
+  setMode('notion');
+});
+
 // 라디오 버튼 직접 클릭
 document.getElementById('radio-realtime').addEventListener('change', () => {
   setMode('real-time');
@@ -36,23 +80,38 @@ document.getElementById('radio-quiz').addEventListener('change', () => {
   setMode('quiz');
 });
 
+document.getElementById('radio-notion').addEventListener('change', () => {
+  setMode('notion');
+});
+
 /**
  * 모드 설정
  */
 function setMode(mode) {
   chrome.storage.local.set({ currentMode: mode }, () => {
     updateModeDisplay(mode);
-    showToast(`${mode === 'real-time' ? '실시간 설명' : '퀴즈'} 모드로 변경되었습니다`, 'success');
+    const modeNames = {
+      'real-time': '실시간 설명',
+      'quiz': '퀴즈',
+      'notion': '노션 정리'
+    };
+    showToast(`${modeNames[mode]} 모드로 변경되었습니다`, 'success');
     
-    // 라디오 버튼 업데이트
+    // 모든 모드 비활성화
+    document.getElementById('mode-realtime').classList.remove('active');
+    document.getElementById('mode-quiz').classList.remove('active');
+    document.getElementById('mode-notion').classList.remove('active');
+    
+    // 선택된 모드 활성화
     if (mode === 'real-time') {
       document.getElementById('radio-realtime').checked = true;
       document.getElementById('mode-realtime').classList.add('active');
-      document.getElementById('mode-quiz').classList.remove('active');
-    } else {
+    } else if (mode === 'quiz') {
       document.getElementById('radio-quiz').checked = true;
       document.getElementById('mode-quiz').classList.add('active');
-      document.getElementById('mode-realtime').classList.remove('active');
+    } else if (mode === 'notion') {
+      document.getElementById('radio-notion').checked = true;
+      document.getElementById('mode-notion').classList.add('active');
     }
   });
 }
@@ -66,6 +125,8 @@ function updateModeDisplay(mode) {
     display.textContent = '실시간 설명 💡';
   } else if (mode === 'quiz') {
     display.textContent = '퀴즈 모드 ❓';
+  } else if (mode === 'notion') {
+    display.textContent = '노션 정리 📚';
   }
 }
 
@@ -117,14 +178,19 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 });
 
 /**
- * 페이지 로드 시 저장된 API 키 확인
+ * 페이지 로드 시 저장된 API 키 확인 및 표시
  */
 chrome.storage.local.get(['openaiApiKey', 'elevenlabsApiKey'], (result) => {
+  const openaiInput = document.getElementById('apiKey');
+  const elevenlabsInput = document.getElementById('elevenlabsApiKey');
+  
   if (result.openaiApiKey) {
-    document.getElementById('apiKey').placeholder = 'OpenAI API 키 저장됨';
+    openaiInput.placeholder = '✅ OpenAI API 키 저장됨';
+    openaiInput.style.borderColor = '#4caf50';
   }
   if (result.elevenlabsApiKey) {
-    document.getElementById('elevenlabsApiKey').placeholder = 'ElevenLabs API 키 저장됨';
+    elevenlabsInput.placeholder = '✅ ElevenLabs API 키 저장됨';
+    elevenlabsInput.style.borderColor = '#4caf50';
   }
 });
 
@@ -154,6 +220,126 @@ document.getElementById('apiKey').addEventListener('keypress', (e) => {
 document.getElementById('elevenlabsApiKey').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     document.getElementById('saveBtn').click();
+  }
+});
+
+// ========================================
+// Notion 설정
+// ========================================
+
+/**
+ * Notion 설정 저장
+ */
+document.getElementById('saveNotionBtn').addEventListener('click', async () => {
+  const notionToken = document.getElementById('notionToken').value.trim();
+  const notionParentPageId = document.getElementById('notionDatabaseId').value.trim();
+  
+  if (!notionToken || !notionParentPageId) {
+    showToast('Token과 상위 페이지 ID를 모두 입력해주세요', 'error');
+    return;
+  }
+  
+  try {
+    await chrome.storage.local.set({
+      notionToken: notionToken,
+      notionParentPageId: notionParentPageId
+    });
+    
+    showToast('Notion 설정이 저장되었습니다!', 'success');
+    
+    // 입력란 초기화
+    document.getElementById('notionToken').value = '';
+    document.getElementById('notionToken').placeholder = 'Token 저장됨';
+    document.getElementById('notionDatabaseId').value = '';
+    document.getElementById('notionDatabaseId').placeholder = '상위 페이지 ID 저장됨';
+    
+  } catch (error) {
+    console.error('Notion 설정 저장 실패:', error);
+    showToast('저장에 실패했습니다', 'error');
+  }
+});
+
+/**
+ * Notion 연결 테스트
+ */
+document.getElementById('testNotionBtn').addEventListener('click', async () => {
+  const statusDiv = document.getElementById('notionStatus');
+  statusDiv.style.display = 'block';
+  statusDiv.textContent = '테스트 중...';
+  statusDiv.className = 'notion-status testing';
+  
+  try {
+    // 저장된 설정 가져오기
+    const result = await chrome.storage.local.get(['notionToken', 'notionParentPageId']);
+    
+    if (!result.notionToken || !result.notionParentPageId) {
+      statusDiv.textContent = '❌ Token과 상위 페이지 ID를 먼저 저장해주세요';
+      statusDiv.className = 'notion-status error';
+      return;
+    }
+    
+    // 페이지 정보 조회로 연결 테스트
+    const response = await fetch(`https://api.notion.com/v1/pages/${result.notionParentPageId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${result.notionToken}`,
+        'Notion-Version': '2022-06-28'
+      }
+    });
+    
+    if (response.ok) {
+      const pageData = await response.json();
+      const pageTitle = pageData.properties?.title?.title?.[0]?.plain_text || 'Untitled';
+      statusDiv.textContent = `✅ 연결 성공! 상위 페이지: ${pageTitle}`;
+      statusDiv.className = 'notion-status success';
+    } else {
+      const errorData = await response.json();
+      statusDiv.textContent = `❌ 연결 실패: ${errorData.message || response.statusText}`;
+      statusDiv.className = 'notion-status error';
+    }
+  } catch (error) {
+    statusDiv.textContent = `❌ 오류: ${error.message}`;
+    statusDiv.className = 'notion-status error';
+  }
+});
+
+/**
+ * 페이지 로드 시 Notion 설정 확인 및 표시
+ */
+chrome.storage.local.get(['notionToken', 'notionParentPageId'], (result) => {
+  const tokenInput = document.getElementById('notionToken');
+  const pageIdInput = document.getElementById('notionDatabaseId');
+  
+  if (result.notionToken) {
+    tokenInput.placeholder = '✅ Token 저장됨';
+    tokenInput.style.borderColor = '#4caf50';
+  }
+  if (result.notionParentPageId) {
+    pageIdInput.placeholder = '✅ 상위 페이지 ID 저장됨';
+    pageIdInput.style.borderColor = '#4caf50';
+  }
+  
+  // 둘 다 설정되어 있으면 성공 메시지 표시
+  if (result.notionToken && result.notionParentPageId) {
+    const statusDiv = document.getElementById('notionStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.textContent = '✅ Notion 설정 완료! 바로 사용 가능합니다';
+    statusDiv.className = 'notion-status success';
+  }
+});
+
+/**
+ * Enter 키로 Notion 설정 저장
+ */
+document.getElementById('notionToken').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('saveNotionBtn').click();
+  }
+});
+
+document.getElementById('notionDatabaseId').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('saveNotionBtn').click();
   }
 });
 

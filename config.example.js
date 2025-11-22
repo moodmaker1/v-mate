@@ -9,12 +9,16 @@
  */
 
 const CONFIG = {
-  // OpenAI GPT API
+  // OpenAI GPT API (필수)
   OPENAI_API_KEY: 'YOUR_OPENAI_API_KEY_HERE',
   
-  // ElevenLabs TTS API
+  // ElevenLabs TTS API (선택)
   ELEVENLABS_API_KEY: 'YOUR_ELEVENLABS_API_KEY_HERE',
-  ELEVENLABS_VOICE_ID: 'uyVNoMrnUku1dZyVEXwD'  // 보이스 ID (여기서만 변경 가능)
+  ELEVENLABS_VOICE_ID: 'uyVNoMrnUku1dZyVEXwD',  // 보이스 ID
+  
+  // Notion API (선택)
+  NOTION_TOKEN: 'YOUR_NOTION_INTEGRATION_TOKEN_HERE',  // secret_xxxxx
+  NOTION_PARENT_PAGE_ID: 'YOUR_NOTION_PAGE_ID_HERE'    // 상위 페이지 ID (32자리)
 };
 
 // background.js에서 사용할 수 있도록 내보내기

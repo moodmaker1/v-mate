@@ -51,6 +51,20 @@
           </div>
         </div>
       </div>
+
+      <div class="mode-option" id="mode-notion">
+        <div class="mode-radio">
+          <input type="radio" name="mode" id="radio-notion">
+          <label for="radio-notion"></label>
+        </div>
+        <div class="mode-content">
+          <div class="mode-icon">📚</div>
+          <div class="mode-info">
+            <h3>노션 정리</h3>
+            <p>드래그한 내용을 노션에 저장</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- API 키 설정 -->
@@ -86,12 +100,48 @@
       <button id="saveBtn" class="save-btn">저장</button>
     </div>
 
+    <!-- Notion 설정 -->
+    <div class="api-section notion-section">
+      <h2>📚 Notion 설정</h2>
+      
+      <label class="api-label">Notion Integration Token</label>
+      <input 
+        type="password" 
+        id="notionToken" 
+        placeholder="secret_xxxxxxxxxxxx"
+        autocomplete="off"
+      >
+      
+      <label class="api-label">상위 페이지 ID</label>
+      <input 
+        type="text" 
+        id="notionDatabaseId" 
+        placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        autocomplete="off"
+      >
+      <p class="api-help" style="font-size: 11px; color: #666; margin-top: 4px;">
+        📝 날짜별 하위 페이지가 생성될 상위 페이지 ID
+      </p>
+      <p class="api-help">
+        <a href="https://www.notion.so/my-integrations" target="_blank">
+          Integration 만들기 →
+        </a>
+      </p>
+      
+      <button id="testNotionBtn" class="test-btn">연결 테스트</button>
+      <button id="saveNotionBtn" class="save-btn">Notion 설정 저장</button>
+      
+      <div id="notionStatus" class="notion-status" style="display: none;"></div>
+    </div>
+
     <!-- 푸터 -->
     <div class="popup-footer">
       <p>v-mate v2.0 | Made with ❤️</p>
     </div>
   </div>
 
+  <!-- config.js를 먼저 로드 (있으면 로드, 없으면 스킵) -->
+  <script src="../config.js" onerror="console.log('config.js 없음 - 직접 입력 필요')"></script>
   <script src="popup.js"></script>
 </body>
 </html>

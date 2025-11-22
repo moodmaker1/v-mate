@@ -154,18 +154,23 @@ body {
 }
 
 #apiKey,
-#elevenlabsApiKey {
+#elevenlabsApiKey,
+#notionToken,
+#notionDatabaseId {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   border-radius: 8px;
   font-size: 13px;
   margin-bottom: 6px;
   font-family: 'Courier New', monospace;
+  transition: border-color 0.3s;
 }
 
 #apiKey:focus,
-#elevenlabsApiKey:focus {
+#elevenlabsApiKey:focus,
+#notionToken:focus,
+#notionDatabaseId:focus {
   outline: none;
   border-color: #667eea;
 }
@@ -251,5 +256,58 @@ body {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+}
+
+/* Notion 섹션 */
+.notion-section {
+  margin-top: 10px;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 20px;
+}
+
+.test-btn {
+  width: 100%;
+  padding: 12px;
+  background: #f0f0f0;
+  color: #333;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+}
+
+.test-btn:hover {
+  background: #e5e5e5;
+  border-color: #b0b0b0;
+}
+
+.notion-status {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.notion-status.testing {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #90caf9;
+}
+
+.notion-status.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #81c784;
+}
+
+.notion-status.error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #e57373;
 }
 
