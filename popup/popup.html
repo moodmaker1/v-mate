@@ -65,6 +65,34 @@
           </div>
         </div>
       </div>
+
+      <div class="mode-option" id="mode-focus">
+        <div class="mode-radio">
+          <input type="radio" name="mode" id="radio-focus">
+          <label for="radio-focus"></label>
+        </div>
+        <div class="mode-content">
+          <div class="mode-icon">🎯</div>
+          <div class="mode-info">
+            <h3>Focus Guard</h3>
+            <p>집중 관리 및 딴짓 감시</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-option" id="mode-research">
+        <div class="mode-radio">
+          <input type="radio" name="mode" id="radio-research">
+          <label for="radio-research"></label>
+        </div>
+        <div class="mode-content">
+          <div class="mode-icon">🔍</div>
+          <div class="mode-info">
+            <h3>Research Assistant</h3>
+            <p>통합 리서치 검색 도구</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- API 키 설정 -->
@@ -132,6 +160,24 @@
       <button id="saveNotionBtn" class="save-btn">Notion 설정 저장</button>
       
       <div id="notionStatus" class="notion-status" style="display: none;"></div>
+    </div>
+
+    <!-- Focus Guard 섹션 -->
+    <div id="focusSection" class="api-section focus-section" style="display: none;">
+      <h2>🎯 Focus Guard</h2>
+      <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+        목표를 설정하고 집중력을 관리하세요
+      </p>
+      <button id="openFocusBtn" class="save-btn">Focus Guard 열기</button>
+    </div>
+
+    <!-- Research Assistant 섹션 -->
+    <div id="researchSection" class="api-section research-section" style="display: none;">
+      <h2>🔍 Research Assistant</h2>
+      <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+        논문과 웹문서를 한 번에 검색하고 노션에 정리하세요
+      </p>
+      <button id="openResearchBtn" class="save-btn">Research Assistant 열기</button>
     </div>
 
     <!-- 푸터 -->

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Assistant - 리서치 어시스턴트</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="research-popup-container">
+    <!-- 헤더 -->
+    <div class="research-header">
+      <h1>🔍 Research Assistant</h1>
+      <p class="subtitle">통합 리서치 검색 도구</p>
+    </div>
+
+    <!-- 검색 섹션 -->
+    <div class="search-section">
+      <div class="search-input-group">
+        <input type="text" id="researchQuery" placeholder="리서치 주제를 입력하세요..." maxlength="200">
+        <button id="searchBtn" class="search-btn">검색</button>
+      </div>
+      
+      <div class="search-options">
+        <label class="option-label">검색 소스:</label>
+        <div class="source-checkboxes">
+          <label class="checkbox-label">
+            <input type="checkbox" id="sourceWeb" checked>
+            <span>웹문서</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="sourcePapers" checked>
+            <span>논문</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 검색 결과 섹션 -->
+    <div id="resultsSection" class="results-section" style="display: none;">
+      <div class="results-header">
+        <h2>검색 결과</h2>
+        <div class="results-stats">
+          <span id="resultsCount">0개</span>
+          <select id="sortBy" class="sort-select">
+            <option value="credibility">신뢰도순</option>
+            <option value="relevance">관련성순</option>
+            <option value="date">최신순</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="selection-controls">
+        <label class="select-all-label">
+          <input type="checkbox" id="selectAllCheckbox">
+          <span>전체 선택</span>
+        </label>
+        <span id="selectedCount" class="selected-count">선택됨: 0개</span>
+      </div>
+
+      <div id="resultsList" class="results-list">
+        <!-- 검색 결과가 여기에 동적으로 추가됨 -->
+      </div>
+
+      <div class="results-actions">
+        <button id="exportToNotionBtn" class="export-btn">노션에 정리하기 (<span id="exportCount">0</span>개)</button>
+        <button id="clearResultsBtn" class="clear-btn">결과 지우기</button>
+      </div>
+    </div>
+
+    <!-- 로딩 상태 -->
+    <div id="loadingState" class="loading-state" style="display: none;">
+      <div class="spinner"></div>
+      <p>검색 중...</p>
+    </div>
+
+    <!-- 빈 상태 -->
+    <div id="emptyState" class="empty-state">
+      <p>주제를 입력하고 검색해보세요</p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+

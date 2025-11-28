@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "v-mate",
   "version": "2.1.0",
-  "description": "대학생을 위한 AI 학습 도우미 - 실시간 설명 + 스마트 퀴즈 + 노션 정리",
+  "description": "대학생을 위한 AI 학습 도우미 - 실시간 설명 + 스마트 퀴즈 + 노션 정리 + Focus Guard + Research Assistant",
   
   "icons": {
     "16": "real-time/icons/icon16.png",
@@ -12,13 +12,17 @@
   
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "tabs"
   ],
   
   "host_permissions": [
     "https://api.openai.com/*",
     "https://api.elevenlabs.io/*",
-    "https://api.notion.com/*"
+    "https://api.notion.com/*",
+    "https://html.duckduckgo.com/*",
+    "http://export.arxiv.org/*",
+    "https://api.semanticscholar.org/*"
   ],
   
   "background": {
@@ -35,12 +39,14 @@
         "quiz/ui/multiple-choice-quiz.js",
         "quiz/ui/subjective-quiz.js",
         "quiz/content.js",
-        "notion-sync/content.js"
+        "notion-sync/content.js",
+        "focus/content.js"
       ],
       "css": [
         "real-time/styles.css",
         "quiz/styles.css",
-        "notion-sync/styles.css"
+        "notion-sync/styles.css",
+        "focus/styles.css"
       ],
       "run_at": "document_end"
     }
@@ -52,6 +58,13 @@
       "16": "real-time/icons/icon16.png",
       "48": "real-time/icons/icon48.png"
     }
-  }
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["focus/popup.html", "research/popup.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
 

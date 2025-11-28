@@ -55,6 +55,10 @@ chrome.storage.local.get(['currentMode'], (result) => {
   } else if (mode === 'notion') {
     document.getElementById('radio-notion').checked = true;
     document.getElementById('mode-notion').classList.add('active');
+  } else if (mode === 'focus') {
+    document.getElementById('radio-focus').checked = true;
+    document.getElementById('mode-focus').classList.add('active');
+    document.getElementById('focusSection').style.display = 'block';
   }
 });
 
@@ -71,6 +75,14 @@ document.getElementById('mode-notion').addEventListener('click', () => {
   setMode('notion');
 });
 
+document.getElementById('mode-focus').addEventListener('click', () => {
+  setMode('focus');
+});
+
+document.getElementById('mode-research').addEventListener('click', () => {
+  setMode('research');
+});
+
 // 라디오 버튼 직접 클릭
 document.getElementById('radio-realtime').addEventListener('change', () => {
   setMode('real-time');
@@ -84,6 +96,14 @@ document.getElementById('radio-notion').addEventListener('change', () => {
   setMode('notion');
 });
 
+document.getElementById('radio-focus').addEventListener('change', () => {
+  setMode('focus');
+});
+
+document.getElementById('radio-research').addEventListener('change', () => {
+  setMode('research');
+});
+
 /**
  * 모드 설정
  */
@@ -93,7 +113,9 @@ function setMode(mode) {
     const modeNames = {
       'real-time': '실시간 설명',
       'quiz': '퀴즈',
-      'notion': '노션 정리'
+      'notion': '노션 정리',
+      'focus': 'Focus Guard',
+      'research': 'Research Assistant'
     };
     showToast(`${modeNames[mode]} 모드로 변경되었습니다`, 'success');
     
@@ -101,6 +123,12 @@ function setMode(mode) {
     document.getElementById('mode-realtime').classList.remove('active');
     document.getElementById('mode-quiz').classList.remove('active');
     document.getElementById('mode-notion').classList.remove('active');
+    document.getElementById('mode-focus').classList.remove('active');
+    document.getElementById('mode-research').classList.remove('active');
+    
+    // 섹션 숨기기
+    document.getElementById('focusSection').style.display = 'none';
+    document.getElementById('researchSection').style.display = 'none';
     
     // 선택된 모드 활성화
     if (mode === 'real-time') {
@@ -112,6 +140,14 @@ function setMode(mode) {
     } else if (mode === 'notion') {
       document.getElementById('radio-notion').checked = true;
       document.getElementById('mode-notion').classList.add('active');
+    } else if (mode === 'focus') {
+      document.getElementById('radio-focus').checked = true;
+      document.getElementById('mode-focus').classList.add('active');
+      document.getElementById('focusSection').style.display = 'block';
+    } else if (mode === 'research') {
+      document.getElementById('radio-research').checked = true;
+      document.getElementById('mode-research').classList.add('active');
+      document.getElementById('researchSection').style.display = 'block';
     }
   });
 }
@@ -127,6 +163,10 @@ function updateModeDisplay(mode) {
     display.textContent = '퀴즈 모드 ❓';
   } else if (mode === 'notion') {
     display.textContent = '노션 정리 📚';
+  } else if (mode === 'focus') {
+    display.textContent = 'Focus Guard 🎯';
+  } else if (mode === 'research') {
+    display.textContent = 'Research Assistant 🔍';
   }
 }
 
@@ -341,5 +381,25 @@ document.getElementById('notionDatabaseId').addEventListener('keypress', (e) => 
   if (e.key === 'Enter') {
     document.getElementById('saveNotionBtn').click();
   }
+});
+
+// Focus Guard 열기 버튼
+document.getElementById('openFocusBtn').addEventListener('click', () => {
+  chrome.windows.create({
+    url: chrome.runtime.getURL('focus/popup.html'),
+    type: 'popup',
+    width: 420,
+    height: 600
+  });
+});
+
+// Research Assistant 열기 버튼
+document.getElementById('openResearchBtn').addEventListener('click', () => {
+  chrome.windows.create({
+    url: chrome.runtime.getURL('research/popup.html'),
+    type: 'popup',
+    width: 520,
+    height: 700
+  });
 });
 

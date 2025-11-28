@@ -1,0 +1,417 @@
+/**
+ * Research Assistant 팝업 스타일
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 500px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f7fa;
+}
+
+.research-popup-container {
+  background: white;
+}
+
+/* 헤더 */
+.research-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.research-header h1 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* 검색 섹션 */
+.search-section {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+#researchQuery {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+#researchQuery:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-btn {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.search-btn:hover {
+  background: #5568d3;
+}
+
+.search-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.search-options {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.option-label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.source-checkboxes {
+  display: flex;
+  gap: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* 결과 섹션 */
+.results-section {
+  padding: 20px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.selection-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.select-all-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.select-all-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.selected-count {
+  font-size: 12px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.results-header h2 {
+  font-size: 16px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.results-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.results-stats span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sort-select {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  background: white;
+  cursor: pointer;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 결과 카드 */
+.result-card {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.result-card-checkbox {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.result-card-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.result-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.result-card.selected {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.result-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.result-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  flex: 1;
+  margin-right: 12px;
+  line-height: 1.4;
+}
+
+.result-title a.result-link {
+  color: #111827;
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  z-index: 1;
+  position: relative;
+}
+
+.result-title a.result-link:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.result-title a.result-link:active {
+  color: #5568d3;
+}
+
+.result-badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.result-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-type {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.badge-credibility {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-credibility.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-credibility.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.result-content {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.result-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.result-source {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.export-btn,
+.clear-btn {
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn {
+  background: #667eea;
+  color: white;
+}
+
+.export-btn:hover {
+  background: #5568d3;
+}
+
+.export-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.export-btn span {
+  font-weight: 700;
+}
+
+.clear-btn {
+  background: white;
+  color: #6b7280;
+  border: 1.5px solid #d1d5db;
+}
+
+.clear-btn:hover {
+  background: #f9fafb;
+}
+
+/* 로딩 상태 */
+.loading-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* 빈 상태 */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* 체크박스 스타일 */
+input[type="checkbox"] {
+  accent-color: #667eea;
+}
+
