@@ -16,7 +16,6 @@ def update_model_dict():
     existing_names = {m["name"] for m in model_dict}
     
     # Scan for new models
-    new_models = []
     for root, dirs, files in os.walk(models_dir):
         for file in files:
             if file.endswith(".model3.json"):

@@ -1,5 +1,4 @@
 import subprocess
-from typing import Dict
 
 class FocusTool:
     """
@@ -36,7 +35,7 @@ class FocusTool:
                 cmd_window = "osascript -e 'tell application \"System Events\" to get name of window 1 of (first application process whose frontmost is true)'"
                 window_title = subprocess.check_output(cmd_window, shell=True, stderr=subprocess.DEVNULL).decode("utf-8").strip()
                 return f"Active App: {app_name}, Window: {window_title}"
-            except:
+            except Exception:
                 return f"Active App: {app_name} (Window title hidden due to permissions)"
                 
         except Exception as e:

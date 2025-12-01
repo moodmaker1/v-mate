@@ -1,7 +1,7 @@
 from duckduckgo_search import DDGS
 import httpx
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any
+from typing import List
 
 class ResearchTool:
     """

@@ -640,7 +640,7 @@ class BasicMemoryAgent(AgentInterface):
                             import json
                             try:
                                 args = json.loads(args)
-                            except:
+                            except Exception:
                                 args = {}
                         
                         content = args.get("content", "")
@@ -684,7 +684,7 @@ class BasicMemoryAgent(AgentInterface):
                             import json
                             try:
                                 args = json.loads(args)
-                            except:
+                            except Exception:
                                 args = {}
                         
                         query = args.get("query", "")

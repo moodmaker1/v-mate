@@ -1,6 +1,4 @@
-import os
 import httpx
-from typing import Optional, Dict, Any
 
 class NotionTool:
     """

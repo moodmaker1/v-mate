@@ -2,9 +2,7 @@ import webview
 import subprocess
 import time
 import requests
-import sys
 import os
-import threading
 import atexit
 
 # Configuration
