@@ -17,6 +17,11 @@ from starlette.staticfiles import StaticFiles as StarletteStaticFiles
 from .routes import init_client_ws_route, init_webtool_routes, init_proxy_route
 from .service_context import ServiceContext
 from .config_manager.utils import Config
+from .input_listener import InputListener
+from .conversations.single_conversation import process_single_conversation
+from .websocket_handler import WebSocketHandler
+import asyncio
+from loguru import logger
 
 
 # Create a custom StaticFiles class that adds CORS headers
@@ -88,10 +93,13 @@ class WebSocketServer:
             allow_headers=["*"],
         )
 
+        # Initialize WebSocketHandler
+        self.ws_handler = WebSocketHandler(self.default_context_cache)
+
         # Include routes, passing the context instance
         # The context will be populated during the initialize step
         self.app.include_router(
-            init_client_ws_route(default_context_cache=self.default_context_cache),
+            init_client_ws_route(ws_handler=self.ws_handler),
         )
         self.app.include_router(
             init_webtool_routes(default_context_cache=self.default_context_cache),
@@ -148,6 +156,71 @@ class WebSocketServer:
             name="frontend",
         )
 
+
+
+        # Initialize Global Hotkey Listener
+        self.input_listener = InputListener(on_hotkey_triggered=self.handle_hotkey_input)
+        
+        @self.app.on_event("startup")
+        async def startup_event():
+            logger.info("Starting Global Hotkey Listener...")
+            self.loop = asyncio.get_running_loop()
+            self.input_listener.start()
+
+        @self.app.on_event("shutdown")
+        async def shutdown_event():
+            logger.info("Stopping Global Hotkey Listener...")
+            self.input_listener.stop()
+
+    def handle_hotkey_input(self, image_data: str):
+        """
+        Callback for hotkey trigger.
+        Injects a conversation with the captured image.
+        """
+        logger.info("Hotkey triggered! Injecting conversation...")
+        
+        # Find an active client session
+        # We pick the first one we find for now (assuming single user usage mostly)
+        client_uid = None
+        context = None
+        
+        if self.ws_handler.client_contexts:
+            client_uid = list(self.ws_handler.client_contexts.keys())[0]
+            context = self.ws_handler.client_contexts[client_uid]
+            logger.info(f"Found active client: {client_uid}")
+        
+        if not client_uid or not context:
+            logger.warning("No active client connected. Cannot trigger conversation.")
+            return
+
+        # Construct the user message with the image
+        user_input = "이 화면 좀 봐줘. (Hotkey Triggered)"
+        
+        # Get the websocket connection
+        websocket = self.ws_handler.client_connections.get(client_uid)
+        if not websocket:
+            logger.warning(f"No active websocket connection for client {client_uid}")
+            return
+
+        # Schedule the conversation processing in the main event loop
+        if hasattr(self, 'loop'):
+            asyncio.run_coroutine_threadsafe(
+                process_single_conversation(
+                    context,
+                    websocket.send_text,
+                    client_uid,
+                    user_input,
+                    images=[{
+                        "source": "screen",
+                        "data": image_data,
+                        "mime_type": "image/png"
+                    }]
+                ),
+                self.loop
+            )
+        else:
+            logger.error("Event loop not captured. Cannot trigger conversation.")
+            
     async def initialize(self):
         """Asynchronously load the service context from config.
         Calling this function is needed if default_context_cache was not provided to the constructor."""

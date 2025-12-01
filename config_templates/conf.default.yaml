@@ -23,7 +23,16 @@ system_config:
     # Prompt to enhance the LLM's ability to output speakable text
     # speakable_prompt: 'speakable_prompt'
     # Additional guidance for LLM on how to use tools
-    # tool_guidance_prompt: 'tool_guidance_prompt' 
+    # tool_guidance_prompt: 'tool_guidance_prompt'
+    # Prompt to inform the LLM about its vision capabilities
+    vision_prompt: 'vision_prompt' 
+
+  # Notion Integration Settings
+  notion_config:
+    # Notion API Key (Internal Integration Secret)
+    notion_token: 'ntn_u87010945901ptNRdH1f8csuQKBDD84yiYr6CdiAo9pdIW'
+    # Notion Parent Page ID (where new pages will be created)
+    notion_parent_page_id: '2b3206a02abe8040acbfd60f71efd306' 
 
 # configuration for the default character
 character_config:

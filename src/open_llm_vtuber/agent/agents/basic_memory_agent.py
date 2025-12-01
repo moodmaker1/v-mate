@@ -28,6 +28,11 @@ from ...mcpp.tool_manager import ToolManager
 from ...mcpp.json_detector import StreamJSONDetector
 from ...mcpp.types import ToolCallObject
 from ...mcpp.tool_executor import ToolExecutor
+from ...tools.vision_tool import VisionTool
+from ...tools.notion_tool import NotionTool
+from ...tools.focus_tool import FocusTool
+from ...tools.research_tool import ResearchTool
+import os
 
 
 class BasicMemoryAgent(AgentInterface):
@@ -49,11 +54,13 @@ class BasicMemoryAgent(AgentInterface):
         tool_manager: Optional[ToolManager] = None,
         tool_executor: Optional[ToolExecutor] = None,
         mcp_prompt_string: str = "",
+        notion_config: Dict[str, str] = None,
     ):
         """Initialize agent with LLM and configuration."""
         super().__init__()
         self._memory = []
         self._live2d_model = live2d_model
+        self.notion_config = notion_config or {}
         self._tts_preprocessor_config = tts_preprocessor_config
         self._faster_first_response = faster_first_response
         self._segment_method = segment_method
@@ -373,22 +380,61 @@ class BasicMemoryAgent(AgentInterface):
                     yield "[Error: ToolExecutor not configured]"
                     return
 
-                tool_executor_iterator = self._tool_executor.execute_tools(
-                    tool_calls=pending_tool_calls,
-                    caller_mode="Claude",
-                )
-                try:
-                    while True:
-                        update = await anext(tool_executor_iterator)
-                        if update.get("type") == "final_tool_results":
-                            tool_results_for_llm = update.get("results", [])
-                            break
-                        else:
-                            yield update
-                except StopAsyncIteration:
-                    logger.warning(
-                        "Tool executor finished without final results marker."
+                # Handle Local Tools (Vision)
+                local_tools_handled = []
+                for tc in pending_tool_calls:
+                    if tc["name"] == "capture_screen":
+                        logger.info("Executing local tool (Claude): capture_screen")
+                        image_data = VisionTool.capture_screen()
+                        
+                        # For Claude, we return the result. 
+                        # Claude expects tool results in the `content` block of a `user` message.
+                        # We will append the result to `tool_results_for_llm` manually later?
+                        # Actually, `_tool_executor` returns a list of results.
+                        # We should mimic that structure or handle it separately.
+                        
+                        # Claude expects:
+                        # { "type": "tool_result", "tool_use_id": "...", "content": "..." }
+                        # AND we want to send the image.
+                        # Claude supports images in `tool_result` content blocks!
+                        
+                        tool_results_for_llm.append({
+                            "type": "tool_result",
+                            "tool_use_id": tc["id"],
+                            "content": [
+                                {"type": "text", "text": "Screen captured successfully."},
+                                {
+                                    "type": "image",
+                                    "source": {
+                                        "type": "base64",
+                                        "media_type": "image/jpeg",
+                                        "data": image_data.split(",")[1] # Remove data:image/jpeg;base64, prefix
+                                    }
+                                }
+                            ]
+                        })
+                        local_tools_handled.append(tc)
+
+                # Filter out handled tools
+                pending_tool_calls = [tc for tc in pending_tool_calls if tc not in local_tools_handled]
+
+                if pending_tool_calls:
+                    tool_executor_iterator = self._tool_executor.execute_tools(
+                        tool_calls=pending_tool_calls,
+                        caller_mode="Claude",
                     )
+                    try:
+                        while True:
+                            update = await anext(tool_executor_iterator)
+                            if update.get("type") == "final_tool_results":
+                                tool_results_for_llm.extend(update.get("results", []))
+                                break
+                            else:
+                                yield update
+                    except StopAsyncIteration:
+                        logger.warning(
+                            "Tool executor finished without final results marker."
+                        )
 
                 if tool_results_for_llm:
                     messages.append({"role": "user", "content": tool_results_for_llm})
@@ -423,7 +469,18 @@ class BasicMemoryAgent(AgentInterface):
                 tools_for_api = None
             else:
                 current_system_prompt = self._system
-                tools_for_api = tools
+                # Inject Vision Tool and Notion Tool
+                vision_tool_def = VisionTool.get_tool_definition()
+                notion_tool_def = NotionTool.get_tool_definition()
+                focus_tool_def = FocusTool.get_tool_definition()
+                research_tool_def = ResearchTool.get_tool_definition()
+                
+                extra_tools = [vision_tool_def, notion_tool_def, focus_tool_def, research_tool_def]
+                
+                if tools:
+                    tools_for_api = tools + extra_tools
+                else:
+                    tools_for_api = extra_tools
 
             stream = self._llm.chat_completion(
                 messages, current_system_prompt, tools=tools_for_api
@@ -545,29 +602,131 @@ class BasicMemoryAgent(AgentInterface):
                     self._add_message(current_turn_text, "assistant")
 
                 tool_results_for_llm = []
-                if not self._tool_executor:
+                
+                # Handle Local Tools (Vision)
+                local_tools_handled = []
+                for tc in pending_tool_calls:
+                    if tc.function.name == "capture_screen":
+                        logger.info("Executing local tool: capture_screen")
+                        image_data = VisionTool.capture_screen()
+                        
+                        # For Vision, we return a success message as tool output
+                        # AND append the image as a new User message so the LLM can see it
+                        # Add tool result to history to satisfy LLM API requirements
+                        tool_results_for_llm.append({
+                            "tool_call_id": tc.id,
+                            "role": "tool",
+                            "name": "capture_screen",
+                            "content": "Screen captured successfully. The image is provided in the next user message."
+                        })
+                        
+                        # Add the image as a new user message
+                        tool_results_for_llm.append({
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": "Here is the screen capture:"},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {"url": image_data}
+                                }
+                            ]
+                        })
+                        local_tools_handled.append(tc)
+                    
+                    elif tc.function.name == "save_to_notion":
+                        logger.info("Executing local tool: save_to_notion")
+                        args = tc.function.arguments
+                        if isinstance(args, str):
+                            import json
+                            try:
+                                args = json.loads(args)
+                            except:
+                                args = {}
+                        
+                        content = args.get("content", "")
+                        title = args.get("title", "Note from VTuber")
+                        
+                        # Get credentials from config or env
+                        api_key = self.notion_config.get("notion_token") or os.environ.get("NOTION_API_KEY")
+                        page_id = self.notion_config.get("notion_parent_page_id") or os.environ.get("NOTION_PARENT_PAGE_ID")
+                        
+                        logger.info(f"Notion Tool - API Key present: {bool(api_key)}, Page ID present: {bool(page_id)}")
+                        if api_key:
+                            logger.info(f"Notion Tool - API Key starts with: {api_key[:5]}...")
+                        if page_id:
+                            logger.info(f"Notion Tool - Page ID starts with: {page_id[:5]}...")
+                        
+                        result = await NotionTool.save_to_notion(content, title, api_key, page_id)
+                        
+                        tool_results_for_llm.append({
+                            "tool_call_id": tc.id,
+                            "role": "tool",
+                            "name": "save_to_notion",
+                            "content": result
+                        })
+                        local_tools_handled.append(tc)
+
+                    elif tc.function.name == "check_active_window":
+                        logger.info("Executing local tool: check_active_window")
+                        result = FocusTool.check_active_window()
+                        tool_results_for_llm.append({
+                            "tool_call_id": tc.id,
+                            "role": "tool",
+                            "name": "check_active_window",
+                            "content": result
+                        })
+                        local_tools_handled.append(tc)
+
+                    elif tc.function.name == "perform_research":
+                        logger.info("Executing local tool: perform_research")
+                        args = tc.function.arguments
+                        if isinstance(args, str):
+                            import json
+                            try:
+                                args = json.loads(args)
+                            except:
+                                args = {}
+                        
+                        query = args.get("query", "")
+                        sources = args.get("sources", ["web"])
+                        
+                        result = await ResearchTool.perform_research(query, sources)
+                        
+                        tool_results_for_llm.append({
+                            "tool_call_id": tc.id,
+                            "role": "tool",
+                            "name": "perform_research",
+                            "content": result
+                        })
+                        local_tools_handled.append(tc)
+
+                # Filter out handled tools
+                pending_tool_calls = [tc for tc in pending_tool_calls if tc not in local_tools_handled]
+
+                if not self._tool_executor and pending_tool_calls:
                     logger.error(
                         "OpenAI Tool interaction requested but ToolExecutor/MCPClient is not available."
                     )
                     yield "[Error: ToolExecutor/MCPClient not configured for OpenAI mode]"
                     continue
 
-                tool_executor_iterator = self._tool_executor.execute_tools(
-                    tool_calls=pending_tool_calls,
-                    caller_mode="OpenAI",
-                )
-                try:
-                    while True:
-                        update = await anext(tool_executor_iterator)
-                        if update.get("type") == "final_tool_results":
-                            tool_results_for_llm = update.get("results", [])
-                            break
-                        else:
-                            yield update
-                except StopAsyncIteration:
-                    logger.warning(
-                        "OpenAI tool executor finished without final results marker."
+                if pending_tool_calls:
+                    tool_executor_iterator = self._tool_executor.execute_tools(
+                        tool_calls=pending_tool_calls,
+                        caller_mode="OpenAI",
                     )
+                    try:
+                        while True:
+                            update = await anext(tool_executor_iterator)
+                            if update.get("type") == "final_tool_results":
+                                tool_results_for_llm.extend(update.get("results", []))
+                                break
+                            else:
+                                yield update
+                    except StopAsyncIteration:
+                        logger.warning(
+                            "OpenAI tool executor finished without final results marker."
+                        )
 
                 if tool_results_for_llm:
                     messages.extend(tool_results_for_llm)

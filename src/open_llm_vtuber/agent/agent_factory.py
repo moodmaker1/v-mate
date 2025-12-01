@@ -61,6 +61,7 @@ class AgentFactory:
             )
 
             tool_prompts = kwargs.get("system_config", {}).get("tool_prompts", {})
+            notion_config = kwargs.get("system_config", {}).get("notion_config", {})
 
             # Extract MCP components/data needed by BasicMemoryAgent from kwargs
             tool_manager: Optional[ToolManager] = kwargs.get("tool_manager")
@@ -83,6 +84,7 @@ class AgentFactory:
                 tool_manager=tool_manager,
                 tool_executor=tool_executor,
                 mcp_prompt_string=mcp_prompt_string,
+                notion_config=notion_config,
             )
 
         elif conversation_agent_choice == "mem0_agent":
