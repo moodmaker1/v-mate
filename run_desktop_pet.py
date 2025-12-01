@@ -1,15 +1,35 @@
 import webview
-import subprocess
+import sys
+import os
+import threading
 import time
 import requests
-import os
-import atexit
+from run_server import run as run_server_func
 
 # Configuration
 SERVER_URL = "http://localhost:12393"
-SERVER_COMMAND = ["uv", "run", "run_server.py"]
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 800
+
+def get_resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+def start_server_thread():
+    """Start the backend server in a separate thread."""
+    print("Starting backend server in thread...")
+    # Run the server with default log level
+    # Note: uvicorn.run blocks, so this thread will stay alive
+    try:
+        run_server_func(console_log_level="INFO")
+    except Exception as e:
+        print(f"Server thread failed: {e}")
 
 def wait_for_server(url):
     """Wait until the server is reachable."""
@@ -28,20 +48,8 @@ def wait_for_server(url):
     print("Server failed to start.")
     return False
 
-def start_server():
-    """Start the backend server as a subprocess."""
-    print("Starting backend server...")
-    # Use preexec_fn to set process group so we can kill the whole tree if needed
-    process = subprocess.Popen(
-        SERVER_COMMAND,
-        cwd=os.path.dirname(os.path.abspath(__file__)),
-        preexec_fn=os.setsid if os.name != 'nt' else None
-    )
-    return process
-
 def inject_transparency(window):
     """Inject CSS to make the background transparent."""
-    # Wait for the page to load (simple delay for now, or use events if available)
     time.sleep(2) 
     
     css = """
@@ -59,24 +67,14 @@ def inject_transparency(window):
     print("Injected transparency CSS.")
 
 def main():
-    # Start the server
-    server_process = start_server()
-
-    # Ensure server is killed on exit
-    def cleanup():
-        print("Shutting down server...")
-        if server_process:
-            if os.name != 'nt':
-                os.killpg(os.getpgid(server_process.pid), 15)  # SIGTERM
-            else:
-                server_process.terminate()
-    atexit.register(cleanup)
+    # Start server in a daemon thread
+    server_thread = threading.Thread(target=start_server_thread, daemon=True)
+    server_thread.start()
 
     # Create the window
-    # transparent=True, frameless=True, on_top=True
     window = webview.create_window(
-        'Open-LLM-VTuber Desktop Pet',
-        url='about:blank', # Start blank, load later
+        'v-mate Desktop Partner',
+        url='about:blank',
         width=WINDOW_WIDTH,
         height=WINDOW_HEIGHT,
         transparent=True,
@@ -86,17 +84,18 @@ def main():
     )
 
     def logic():
-        # Wait for server in the logic thread
         if wait_for_server(SERVER_URL):
-            # Load the actual URL
             window.load_url(SERVER_URL)
-            # Inject CSS
             inject_transparency(window)
         else:
             window.load_html("<h1>Failed to connect to server</h1>")
 
-    # Start the webview (blocks main thread)
+    # Start webview (blocks main thread)
     webview.start(func=logic, debug=True)
 
 if __name__ == '__main__':
+    # Set environment variables for PyInstaller if needed
+    if getattr(sys, 'frozen', False):
+        os.environ["FROZEN_APP"] = "1"
+        
     main()
