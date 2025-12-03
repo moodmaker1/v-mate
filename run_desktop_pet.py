@@ -24,6 +24,30 @@ else:
     os.environ["PATH"] += ":/opt/homebrew/bin:/usr/local/bin"
     print("Injected default PATH")
 
+# Auto-create conf.yaml if missing (for packaged app)
+import shutil
+config_path = "conf.yaml"
+template_path = os.path.join("config_templates", "conf.default.yaml")
+
+if getattr(sys, 'frozen', False):
+    # In frozen app, we are in sys._MEIPASS
+    # But we want to write conf.yaml to the executable directory (or user data dir)
+    # For simplicity, let's try writing to the current working directory (which is _MEIPASS)
+    # Wait, _MEIPASS is read-only usually? No, it's a temp dir.
+    # But the app expects conf.yaml to be readable.
+    
+    # Actually, let's check if it exists in CWD (which we set to _MEIPASS)
+    if not os.path.exists(config_path):
+        if os.path.exists(template_path):
+            print(f"conf.yaml not found. Creating from {template_path}...")
+            try:
+                shutil.copy2(template_path, config_path)
+                print("Created conf.yaml")
+            except Exception as e:
+                print(f"Failed to create conf.yaml: {e}")
+        else:
+            print(f"Warning: Template {template_path} not found.")
+
 try:
     import webview
     import threading

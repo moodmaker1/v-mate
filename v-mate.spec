@@ -50,7 +50,6 @@ datas = [
     ('prompts', 'prompts'),
     ('config_templates', 'config_templates'),
     ('src', 'src'),
-    ('conf.yaml', '.'),  # Include user config if present
     ('model_dict.json', '.'),
     ('pyproject.toml', '.'),
     ('backgrounds', 'backgrounds'),
@@ -59,6 +58,10 @@ datas = [
     ('models', 'models'),
     ('mcp_servers.json', '.'),
 ]
+
+# Include user config if present (optional)
+if os.path.exists('conf.yaml'):
+    datas.append(('conf.yaml', '.'))
 
 # Add any dynamic collections
 # collect_all returns (datas, binaries, hiddenimports)
