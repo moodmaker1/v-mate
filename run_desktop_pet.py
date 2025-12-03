@@ -2,11 +2,17 @@ import sys
 import os
 
 # Setup logging IMMEDIATELY to catch import errors
+if sys.platform == 'win32':
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+
 if getattr(sys, 'frozen', False):
     os.environ["FROZEN_APP"] = "1"
     try:
         log_path = os.path.join(os.path.expanduser("~"), "v-mate.log")
-        sys.stdout = open(log_path, "w")
+        # Open log file with utf-8 encoding
+        sys.stdout = open(log_path, "w", encoding="utf-8")
         sys.stderr = sys.stdout
         print(f"Log started at {log_path}")
         
