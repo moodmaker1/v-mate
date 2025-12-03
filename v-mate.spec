@@ -4,6 +4,7 @@ import os
 from PyInstaller.utils.hooks import collect_all
 
 block_cipher = None
+binaries = []
 
 # Collect hidden imports for complex libraries
 hidden_imports = [
@@ -51,23 +52,30 @@ datas = [
     ('src', 'src'),
     ('conf.yaml', '.'),  # Include user config if present
     ('model_dict.json', '.'),
+    ('pyproject.toml', '.'),
+    ('backgrounds', 'backgrounds'),
+    ('avatars', 'avatars'),
+    ('web_tool', 'web_tool'),
+    ('models', 'models'),
+    ('mcp_servers.json', '.'),
 ]
 
 # Add any dynamic collections
+# collect_all returns (datas, binaries, hiddenimports)
 tmp_ret = collect_all('sherpa_onnx')
-datas += tmp_ret[0]; hidden_imports += tmp_ret[1]
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
 
 tmp_ret = collect_all('funasr')
-datas += tmp_ret[0]; hidden_imports += tmp_ret[1]
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
 
 tmp_ret = collect_all('edge_tts')
-datas += tmp_ret[0]; hidden_imports += tmp_ret[1]
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
 
 
 a = Analysis(
     ['run_desktop_pet.py'],
     pathex=[],
-    binaries=[],
+    binaries=binaries,
     datas=datas,
     hiddenimports=hidden_imports,
     hookspath=[],
@@ -91,7 +99,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True, # Set to False for GUI only, but True is good for debugging first
+    console=False, # Set to False for GUI only
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
@@ -110,9 +118,10 @@ coll = COLLECT(
     name='v-mate',
 )
 
-app = BUNDLE(
-    coll,
-    name='v-mate.app',
-    icon=None,
-    bundle_identifier='com.kimtaeyoon.vmate',
-)
+if sys.platform == 'darwin':
+    app = BUNDLE(
+        coll,
+        name='v-mate.app',
+        icon=None,
+        bundle_identifier='com.kimtaeyoon.vmate',
+    )
