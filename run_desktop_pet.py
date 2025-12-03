@@ -4,8 +4,8 @@ import os
 # Setup logging IMMEDIATELY to catch import errors
 if sys.platform == 'win32':
     os.environ["PYTHONIOENCODING"] = "utf-8"
-    sys.stdout.reconfigure(encoding='utf-8')
-    sys.stderr.reconfigure(encoding='utf-8')
+    # sys.stdout/stderr might be None in noconsole mode, so don't reconfigure them yet.
+    # We will redirect them to a file with utf-8 encoding shortly.
 
 if getattr(sys, 'frozen', False):
     os.environ["FROZEN_APP"] = "1"
