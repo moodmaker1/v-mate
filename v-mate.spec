@@ -62,14 +62,21 @@ datas = [
 
 # Add any dynamic collections
 # collect_all returns (datas, binaries, hiddenimports)
-tmp_ret = collect_all('sherpa_onnx')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
+try:
+    tmp_ret = collect_all('sherpa_onnx')
+    datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
+except Exception as e:
+    print(f"Warning: Failed to collect sherpa_onnx: {e}")
 
-tmp_ret = collect_all('funasr')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
+# funasr is optional and not installed in this build environment
+# tmp_ret = collect_all('funasr')
+# datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
 
-tmp_ret = collect_all('edge_tts')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
+try:
+    tmp_ret = collect_all('edge_tts')
+    datas += tmp_ret[0]; binaries += tmp_ret[1]; hidden_imports += tmp_ret[2]
+except Exception as e:
+    print(f"Warning: Failed to collect edge_tts: {e}")
 
 
 a = Analysis(
