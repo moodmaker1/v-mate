@@ -1,10 +1,40 @@
-import webview
 import sys
 import os
-import threading
-import time
-import requests
-from run_server import run as run_server_func
+
+# Setup logging IMMEDIATELY to catch import errors
+if getattr(sys, 'frozen', False):
+    os.environ["FROZEN_APP"] = "1"
+    try:
+        log_path = os.path.join(os.path.expanduser("~"), "v-mate.log")
+        sys.stdout = open(log_path, "w")
+        sys.stderr = sys.stdout
+        print(f"Log started at {log_path}")
+        
+        # Change CWD to the internal resource directory
+        os.chdir(sys._MEIPASS)
+        print(f"Changed CWD to internal dir: {sys._MEIPASS}")
+    except Exception as e:
+        pass # If logging fails, we can't do much
+
+# Ensure PATH exists in environment variables (required for pydub)
+if "PATH" not in os.environ:
+    os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+else:
+    # Append Homebrew paths just in case
+    os.environ["PATH"] += ":/opt/homebrew/bin:/usr/local/bin"
+    print("Injected default PATH")
+
+try:
+    import webview
+    import threading
+    import time
+    import requests
+    from run_server import run as run_server_func
+except Exception as e:
+    print(f"CRITICAL IMPORT ERROR: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 
 # Configuration
 SERVER_URL = "http://localhost:12393"
@@ -72,15 +102,18 @@ def main():
     server_thread.start()
 
     # Create the window
+    # For debugging, we disable transparency and frameless to see the window content
     window = webview.create_window(
-        'v-mate Desktop Partner',
+        'V-Mate',
         url='about:blank',
         width=WINDOW_WIDTH,
         height=WINDOW_HEIGHT,
         transparent=True,
         frameless=True,
         on_top=True,
-        resizable=True
+        resizable=True,
+        x=100,
+        y=100
     )
 
     def logic():
@@ -94,8 +127,4 @@ def main():
     webview.start(func=logic, debug=True)
 
 if __name__ == '__main__':
-    # Set environment variables for PyInstaller if needed
-    if getattr(sys, 'frozen', False):
-        os.environ["FROZEN_APP"] = "1"
-        
     main()
