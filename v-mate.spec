@@ -55,13 +55,16 @@ datas = [
     ('backgrounds', 'backgrounds'),
     ('avatars', 'avatars'),
     ('web_tool', 'web_tool'),
-    ('models', 'models'),
     ('mcp_servers.json', '.'),
 ]
 
 # Include user config if present (optional)
 if os.path.exists('conf.yaml'):
     datas.append(('conf.yaml', '.'))
+
+# Include models if present (optional)
+if os.path.exists('models'):
+    datas.append(('models', 'models'))
 
 # Add any dynamic collections
 # collect_all returns (datas, binaries, hiddenimports)
