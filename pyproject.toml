@@ -75,3 +75,6 @@ per-file-ignores = { "scripts/run_bilibili_live.py" = ["E402"] }
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
