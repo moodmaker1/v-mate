@@ -1,10 +1,29 @@
 # -*- mode: python ; coding: utf-8 -*-
 import sys
 import os
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_all, collect_data_files
+import glob
 
 block_cipher = None
+
+# Helper to find Python.Runtime.dll
+def find_python_runtime_dll():
+    try:
+        import pythonnet
+        runtime_path = os.path.join(os.path.dirname(pythonnet.__file__), 'runtime')
+        dlls = glob.glob(os.path.join(runtime_path, 'Python.Runtime.dll'))
+        if dlls:
+            return (dlls[0], os.path.join('pythonnet', 'runtime'))
+    except ImportError:
+        pass
+    return None
+
+python_runtime_dll = find_python_runtime_dll()
+
 binaries = []
+if python_runtime_dll:
+    binaries.append(python_runtime_dll)
+
 
 # Collect hidden imports for complex libraries
 hidden_imports = [
@@ -19,6 +38,8 @@ hidden_imports = [
     'uvicorn.lifespan.on',
     'engineio.async_drivers.asgi',
     'socketio',
+    'pythonnet',
+    'clr_loader',
     'pydantic',
     'numpy',
     'PIL',
