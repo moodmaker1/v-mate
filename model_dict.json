@@ -1,0 +1,248 @@
+[
+    {
+        "name": "mao_pro",
+        "description": "",
+        "url": "/live2d-models/mao_pro/runtime/mao_pro.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {
+            "neutral": 0,
+            "anger": 2,
+            "disgust": 2,
+            "fear": 1,
+            "joy": 3,
+            "smirk": 3,
+            "sadness": 1,
+            "surprise": 3
+        },
+        "tapMotions": {
+            "HitAreaHead": {
+                "": 1
+            },
+            "HitAreaBody": {
+                "": 1
+            }
+        }
+    },
+    {
+        "name": "hiyori",
+        "description": "Hiyori Momose Free Version",
+        "url": "/live2d-models/hiyori_free_ko/runtime/hiyori_free_t08.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "shizuku",
+        "description": "Shizuku Sample Model",
+        "url": "/live2d-models/shizuku/runtime/shizuku.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {
+            "neutral": 0,
+            "anger": 2,
+            "disgust": 2,
+            "fear": 1,
+            "joy": 3,
+            "smirk": 3,
+            "sadness": 1,
+            "surprise": 3
+        }
+    },
+    {
+        "name": "tororo_hijiki",
+        "description": "Auto-detected model: tororo_hijiki",
+        "url": "/live2d-models/tororo_hijiki/hijiki/runtime/hijiki.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "nito",
+        "description": "Auto-detected model: nito",
+        "url": "/live2d-models/nito/runtime/nito.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "chitose",
+        "description": "Auto-detected model: chitose",
+        "url": "/live2d-models/chitose/runtime/chitose.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "mark_free_ko",
+        "description": "Auto-detected model: mark_free_ko",
+        "url": "/live2d-models/mark_free_ko/runtime/mark_free_t04.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "izumi",
+        "description": "Auto-detected model: izumi",
+        "url": "/live2d-models/izumi/runtime/izumi_illust.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "hiyori_free_ko",
+        "description": "Auto-detected model: hiyori_free_ko",
+        "url": "/live2d-models/hiyori_free_ko/runtime/hiyori_free_t08.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "simple",
+        "description": "Auto-detected model: simple",
+        "url": "/live2d-models/simple/runtime/simple.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "haru_greeter_pro_jp",
+        "description": "Auto-detected model: haru_greeter_pro_jp",
+        "url": "/live2d-models/haru_greeter_pro_jp/runtime/haru_greeter_t05.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "Gantzert_Felixander",
+        "description": "Auto-detected model: Gantzert_Felixander",
+        "url": "/live2d-models/Gantzert_Felixander/runtime/Gantzert_Felixander.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "miara_pro_en",
+        "description": "Auto-detected model: miara_pro_en",
+        "url": "/live2d-models/miara_pro_en/runtime/miara_pro_t03.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "koharu_haruto",
+        "description": "Auto-detected model: koharu_haruto",
+        "url": "/live2d-models/koharu_haruto/\u00c7\u00d5\u00c7\u00c8\u00c7\u2206/runtime/haruto.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "kei_ko",
+        "description": "Auto-detected model: kei_ko",
+        "url": "/live2d-models/kei_ko/kei_basic_free/runtime/kei_basic_free.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "rice_pro_ko",
+        "description": "Auto-detected model: rice_pro_ko",
+        "url": "/live2d-models/rice_pro_ko/runtime/rice_pro_t03.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "haru",
+        "description": "Auto-detected model: haru",
+        "url": "/live2d-models/haru/runtime/haru.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "hibiki",
+        "description": "Auto-detected model: hibiki",
+        "url": "/live2d-models/hibiki/runtime/hibiki.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "Epsilon_free",
+        "description": "Auto-detected model: Epsilon_free",
+        "url": "/live2d-models/Epsilon_free/runtime/Epsilon_free.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    },
+    {
+        "name": "wanko",
+        "description": "Auto-detected model: wanko",
+        "url": "/live2d-models/wanko/runtime/wanko_touch.model3.json",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "kXOffset": 1150,
+        "idleMotionGroupName": "Idle",
+        "emotionMap": {}
+    }
+]
