@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Landing Page</title>
+
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Live2D Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.8/browser/pixi.min.js"></script>
+    <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/index.min.js"></script>
+
+    <style>
+        /* --- 기본 설정 --- */
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent-color: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: 0.3s;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* --- 유틸리티 클래스 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .text-gradient {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+        }
+
+        /* --- 헤더 --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 1000;
+            transition: 0.4s;
+        }
+
+        header.scrolled {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a:hover {
+            color: #8b5cf6;
+        }
+
+        /* --- 히어로 섹션 --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 배경 효과 */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+            animation: float-bg 10s infinite alternate;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+            animation: float-bg 8s infinite alternate-reverse;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- 특징 섹션 (카드) --- */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #94a3b8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 20px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            padding: 15px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            color: #8b5cf6;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        /* --- 쇼케이스 섹션 --- */
+        .showcase {
+            padding: 100px 0;
+            background: linear-gradient(to bottom, var(--bg-color), #1e293b);
+        }
+
+        .showcase-inner {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .showcase-content {
+            flex: 1;
+        }
+
+        .showcase-image {
+            flex: 1;
+            height: 400px;
+            background: var(--glass-bg);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 추상적인 이미지 플레이스홀더 */
+        .abstract-shape {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-gradient);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morph 6s infinite ease-in-out;
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+        }
+
+        /* --- 하단 CTA --- */
+        .cta-section {
+            padding: 120px 0;
+            text-align: center;
+            background: radial-gradient(circle at center, #1e293b 0%, var(--bg-color) 100%);
+        }
+
+        /* --- 푸터 --- */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            color: #64748b;
+        }
+
+        /* --- 애니메이션 키프레임 --- */
+        @keyframes float-bg {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        @keyframes morph {
+            0% {
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            }
+
+            50% {
+                border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%;
+            }
+
+            100% {
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            }
+        }
+
+        /* --- 모바일 대응 --- */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            /* 간단히 숨김 처리 */
+            .showcase-inner {
+                flex-direction: column;
+            }
+
+            .showcase-image {
+                width: 100%;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="navbar">
+        <div class="container nav-inner">
+            <div class="logo">NEXUS<span class="text-gradient">.io</span></div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home">홈</a></li>
+                    <li><a href="#features">기능 소개</a></li>
+                    <li><a href="#showcase">서비스</a></li>
+                    <li><a href="#contact">문의하기</a></li>
+                </ul>
+            </nav>
+            <a href="#" class="btn btn-primary" style="padding: 8px 24px; font-size: 0.9rem;">로그인</a>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1 data-aos="fade-up" data-aos-duration="1000">
+                상상을 현실로 만드는 <br>
+                <span class="text-gradient">디지털 크리에이티브</span>
+            </h1>
+            <p data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                혁신적인 디자인과 최신 기술로 당신의 비즈니스를 한 단계 업그레이드하세요.<br>
+                가장 빠르고 강력한 웹 솔루션을 지금 경험해보세요.
+            </p>
+            <div data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+                <a href="#" class="btn btn-primary">지금 시작하기</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>압도적인 <span class="text-gradient">퍼포먼스</span></h2>
+                <p>우리가 제공하는 핵심 가치를 확인해보세요.</p>
+            </div>
+            <div class="grid">
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-icon">🚀</div>
+                    <h3>초고속 로딩</h3>
+                    <p>최적화된 코드로 언제 어디서나 0.1초 안에 반응하는 웹사이트를 경험하세요. 고객 이탈률을 획기적으로 줄입니다.</p>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-icon">🎨</div>
+                    <h3>모던 디자인</h3>
+                    <p>트렌드를 선도하는 UI/UX 디자인으로 사용자에게 잊지 못할 시각적 경험과 편의성을 제공합니다.</p>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-icon">🔒</div>
+                    <h3>강력한 보안</h3>
+                    <p>최신 암호화 기술과 데이터 보호 정책을 통해 당신과 고객의 소중한 정보를 안전하게 지킵니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="showcase" class="showcase">
+        <div class="container showcase-inner">
+            <div class="showcase-image" data-aos="fade-right">
+                <div class="abstract-shape"></div>
+            </div>
+            <div class="showcase-content" data-aos="fade-left">
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px;">경계 없는 <span class="text-gradient">확장성</span></h2>
+                <p style="color: #94a3b8; margin-bottom: 30px;">
+                    모바일, 태블릿, 데스크탑 어디서든 완벽하게 작동합니다. <br>
+                    복잡한 설정 없이 바로 시작할 수 있는 직관적인 인터페이스를 제공하며,
+                    필요한 모든 기능을 모듈형으로 추가할 수 있습니다.
+                </p>
+                <ul style="margin-bottom: 30px;">
+                    <li style="margin-bottom: 10px;">✅ 실시간 데이터 분석 대시보드</li>
+                    <li style="margin-bottom: 10px;">✅ 클라우드 기반 자동 백업</li>
+                    <li style="margin-bottom: 10px;">✅ 24/7 전문가 기술 지원</li>
+                </ul>
+                <a href="#" class="btn btn-primary">자세히 보기</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2 data-aos="zoom-in" style="font-size: 2.5rem; margin-bottom: 30px;">
+                지금 바로 <br>미래를 경험하세요
+            </h2>
+            <a href="#" class="btn btn-primary" data-aos="flip-up" data-aos-delay="200">무료로 시작하기</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Nexus Theme. All rights reserved. Designed by AI.</p>
+        </div>
+    </footer>
+
+    <!-- VTuber Widget -->
+    <div id="vtuber-widget"
+        style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 300px; height: 400px; pointer-events: none;">
+        <canvas id="live2d" style="width: 100%; height: 100%; pointer-events: auto;"></canvas>
+        <div id="vtuber-controls"
+            style="position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; pointer-events: auto;">
+            <button onclick="switchModel('shizuku')" class="btn btn-primary"
+                style="padding: 8px 16px; font-size: 0.8rem; margin: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">Shizuku</button>
+            <button onclick="switchModel('hiyori')" class="btn btn-primary"
+                style="padding: 8px 16px; font-size: 0.8rem; margin: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">Hiyori</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // --- Live2D Integration ---
+        (function () {
+            const widget = document.getElementById('vtuber-widget');
+            const canvas = document.getElementById('live2d');
+
+            // Initialize PixiJS Application
+            const app = new PIXI.Application({
+                view: canvas,
+                autoStart: true,
+                backgroundAlpha: 0,
+                width: 300,
+                height: 400,
+                resolution: window.devicePixelRatio || 1,
+            });
+
+            const { Live2DModel } = PIXI.live2d;
+            let currentModel = null;
+
+            // WebSocket Connection
+            const socket = new WebSocket('ws://localhost:12393/client-ws');
+
+            socket.onopen = () => {
+                console.log('Connected to VTuber Server');
+            };
+
+            socket.onmessage = async (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('Received:', data);
+
+                    if (data.type === 'set-model-and-conf') {
+                        const modelInfo = data.model_info;
+                        // Construct full URL. Server mounts live2d-models at /live2d-models
+                        const modelUrl = 'http://localhost:12393/' + modelInfo.url;
+                        console.log('Loading model:', modelUrl);
+
+                        if (currentModel) {
+                            app.stage.removeChild(currentModel);
+                            currentModel.destroy();
+                            currentModel = null;
+                        }
+
+                        try {
+                            currentModel = await Live2DModel.from(modelUrl);
+                            app.stage.addChild(currentModel);
+
+                            // Scale and Position
+                            const scaleX = app.screen.width / currentModel.width;
+                            const scaleY = app.screen.height / currentModel.height;
+                            const scale = Math.min(scaleX, scaleY) * 1.2; // Slightly larger
+
+                            currentModel.scale.set(scale);
+                            currentModel.anchor.set(0.5, 0.5);
+                            currentModel.x = app.screen.width / 2;
+                            currentModel.y = app.screen.height / 2 + 50;
+
+                            // Enable interaction
+                            currentModel.on('hit', (hitAreas) => {
+                                if (hitAreas.includes('Body')) {
+                                    currentModel.motion('TapBody');
+                                }
+                            });
+
+                        } catch (e) {
+                            console.error('Failed to load model:', e);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error processing message:', e);
+                }
+            };
+
+            // Expose switch function globally
+            window.switchModel = (modelName) => {
+                const configFile = modelName + '.yaml';
+                console.log('Switching to:', configFile);
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: 'switch-config',
+                        file: configFile
+                    }));
+                } else {
+                    console.error('WebSocket not connected');
+                }
+            };
+        })();
+    </script>
+    <script>
+        // AOS 초기화
+        AOS.init({
+            once: true, // 스크롤을 다시 올려도 애니메이션 반복 안 함 (깔끔함을 위해)
+            offset: 100, // 트리거 위치 조정
+            duration: 800, // 애니메이션 지속 시간
+            easing: 'ease-out-cubic', // 부드러운 가속도
+        });
+
+        // 네비게이션 스크롤 효과
+        window.addEventListener('scroll', function () {
+            const header = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+
+</html>
