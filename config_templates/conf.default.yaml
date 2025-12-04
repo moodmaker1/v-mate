@@ -30,9 +30,9 @@ system_config:
   # Notion Integration Settings
   notion_config:
     # Notion API Key (Internal Integration Secret)
-    notion_token: 'ntn_u87010945901ptNRdH1f8csuQKBDD84yiYr6CdiAo9pdIW'
+    notion_token: 'YOUR_NOTION_TOKEN_HERE'
     # Notion Parent Page ID (where new pages will be created)
-    notion_parent_page_id: '2b3206a02abe8040acbfd60f71efd306' 
+    notion_parent_page_id: 'YOUR_PAGE_ID_HERE' 
 
 # configuration for the default character
 character_config:
